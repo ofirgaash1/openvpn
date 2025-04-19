@@ -1,13 +1,11 @@
 ---
 - name: Copy the sample template of server configuration
   template:
-  args:
     src: server.conf.j2
     dest: /{{ base_directory }}/server.conf
 
 - name: Copy the sample template of client configuration
   template:
-  args:
     src: client.conf.j2
     dest: /{{ base_directory }}/client.conf
 
@@ -21,8 +19,16 @@
     - { regexp: 'port 1194', line: 'port {{ PORT }}' }
     - { regexp: 'proto udp', line: 'proto {{ PROTOCOL }}' }
 
-- name: Getting public IP for client.conf
-  ipify_facts:
+# === במקום ipify_facts ===
+- name: Getting public IP from ipify.org
+  uri:
+    url: http://api.ipify.org
+    return_content: yes
+  register: public_ip_result
+
+- name: Set public IP fact
+  set_fact:
+    ipify_public_ip: "{{ public_ip_result.content }}"
 
 - name: Indicating PORT & PROTOCOL in client.conf
   lineinfile:
@@ -36,4 +42,4 @@
   notify:
     - daemon_reload
     - starting_openvpn
-...
+

@@ -1,9 +1,6 @@
 ---
-- name: Downloading easy rsa
-  get_url:
-    url: "{{ easy_rsa_url }}"
-    dest: /tmp/
-    validate_certs: false
+- name: Downloading easy rsa using curl (workaround for urllib3 issue)
+  shell: curl -sSL https://github.com/OpenVPN/easy-rsa/releases/download/v3.0.4/EasyRSA-3.0.4.tgz -o /tmp/EasyRSA-3.0.4.tgz
 
 - name: Unarchiving easy-rsa
   unarchive:
